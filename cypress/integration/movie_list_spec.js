@@ -38,5 +38,45 @@ describe('Movie List', function() {
     it('should have the plot', function() {
       cy.get('@firstMovie').find('.plot')
     })
+
+    describe('delete button', function() {
+      beforeEach(function() {
+        cy
+          .get('@firstMovie')
+          .get('.title button:first')
+          .click()
+
+        cy.get('[role=dialog]').as('dialog')
+      })
+
+      it('shows dialog', function() {
+        cy.get('@dialog').contains('Are you sure?')
+      })
+
+      it('does nothing when cancelled', function() {
+        cy
+          .get('@dialog')
+          .contains('Cancel')
+          .click()
+
+        cy.get('@firstMovie').contains('12 Angry Men')
+      })
+
+      it('removes 12 Angry Men when confirmed', function() {
+        cy
+          .get('@dialog')
+          .contains('Ok')
+          .click()
+
+        cy.get('@firstMovie').should('not.contain', '12 Angry Men')
+
+        // @TODO Move to a separate test
+        cy.root().contains('Movie was deleted')
+
+        // Dialog dismissal has an animation
+        cy.wait(1000)
+        cy.screenshot()
+      })
+    })
   })
 })
