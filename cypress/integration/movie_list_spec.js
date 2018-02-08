@@ -41,10 +41,9 @@ describe('Movie List', function() {
 
     describe('delete button', function() {
       beforeEach(function() {
-        cy
-          .get('@firstMovie')
-          .get('.title button:first')
-          .click()
+        cy.get('@firstMovie').within(function() {
+          cy.get('.title .glyphicon-remove').click()
+        })
 
         cy.get('[role=dialog]').as('dialog')
       })
@@ -75,7 +74,45 @@ describe('Movie List', function() {
 
         // Dialog dismissal has an animation
         cy.wait(1000)
-        cy.screenshot()
+      })
+    })
+
+    describe('edit button', function() {
+      beforeEach(function() {
+        cy.get('@firstMovie').within(function() {
+          cy.get('.title .glyphicon-edit').click()
+        })
+
+        cy.get('[role=dialog]').as('dialog')
+      })
+
+      it('shows dialog', function() {
+        cy.get('@dialog').contains('Edit movie')
+      })
+
+      it('does nothing when cancelled', function() {
+        cy
+          .get('@dialog')
+          .contains('Cancel')
+          .click()
+
+        cy.get('@firstMovie').contains('12 Angry Men')
+      })
+
+      it('changes the title when edited', function() {
+        cy.get('@dialog').within(function() {
+          cy
+            .get('input[name=title]')
+            .clear()
+            .type('12 Angry Men and a Baby')
+
+          cy.contains('Save').click()
+        })
+
+        cy.get('@firstMovie').contains('12 Angry Men and a Baby')
+
+        // @TODO Move to a separate test
+        cy.root().contains('Movie was saved')
       })
     })
   })
