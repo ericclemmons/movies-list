@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "http://yegor-sytnyk.github.io/movies-list",
   "devDependencies": {
+    "cypress": "1.4.2",
     "gh-pages": "^0.11.0"
   },
   "dependencies": {
